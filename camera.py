@@ -107,8 +107,6 @@ class CameraManager:
             return False
         else:
             return True
-            
-
 
     def check_camera_status(self, url):
         cap = cv2.VideoCapture(url)
@@ -141,8 +139,7 @@ class CameraManager:
                             break
                         out.write(frame)
                         self.check_storage_space()
-                        if(not self.check_chunk_size(filename,camera_id)):
-                            break
+                        self.check_chunk_size(filename,camera_id)
                     cap.release()
                     out.release()
 
