@@ -15,21 +15,23 @@
 </form>
 <ul class="list-group mt-3">
     {% for camera in cameras %}
-    <li class="list-group-item">
-        <span>{{ camera.nickname }} - {{ camera.url }} - {{ camera.status }} 
-        {% if camera.recording %}<span class="badge bg-danger">Recording</span>{% endif %}</span>
-        <img src="{{ url_for('static', filename=camera_manager.get_last_frame(camera.id)) }}" alt="Last frame" class="img-thumbnail" width="100">
+    <li class="list-group-item d-flex">
+        <img src="{{camera_manager.get_last_frame(camera.id) }}" alt="Last frame" class="img-thumbnail" width="100">
+        <div class="mx-2">
+            <span>{{ camera.nickname }}<span class="badge badge-secondary bg-primary">{{ camera.status }} </span> 
+            {% if camera.recording %}<span class="badge bg-danger">🔴</span>{% endif %}</span>
+        </div>
         <form action="{{ url_for('edit_camera', camera_id=camera.id) }}" method="post" class="d-inline-block">
             <input type="text" class="form-control d-inline-block w-50" name="url" value="{{ camera.url }}">
             <input type="text" class="form-control d-inline-block w-25" name="nickname" value="{{ camera.nickname }}">
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i></button>
         </form>
-        <a href="{{ url_for('remove_camera', camera_id=camera.id) }}" class="btn btn-danger">Remove</a>
-        <a href="{{ url_for('start_recording', camera_id=camera.id) }}" class="btn btn-primary">Start Recording</a>
-        <a href="{{ url_for('stop_recording', camera_id=camera.id) }}" class="btn btn-secondary">Stop Recording</a>
-        <a href="{{ url_for('flush_recording', camera_id=camera.id) }}" class="btn btn-warning">Flush Recording</a>
-        <a href="{{ url_for('view_last_recording', camera_id=camera.id) }}" class="btn btn-info">View Last Recording</a>
-        <a href="{{ url_for('refresh_feed', camera_id=camera.id) }}" class="btn btn-success">Refresh Feed</a>
+        <a href="{{ url_for('remove_camera', camera_id=camera.id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+        {% if not camera.recording %}<a href="{{ url_for('start_recording', camera_id=camera.id) }}" class="btn btn-primary"> <i class="fa fa-dot-circle-o"></i> Start Rec</a>
+        {% else %}<a href="{{ url_for('stop_recording', camera_id=camera.id) }}" class="btn btn-secondary"><i class="fa fa-stop-circle"></i> Stop Rec</a>{% endif %}
+        <a href="{{ url_for('flush_recording', camera_id=camera.id) }}" class="btn btn-warning"> <i class="fa fa-download"></i> Flush</a>
+        <a href="{{ url_for('view_last_recording', camera_id=camera.id) }}" class="btn btn-info"><i class="fa fa-files-o"></i> Recordings</a>
+        <a href="{{ url_for('refresh_feed', camera_id=camera.id) }}" class="btn btn-success"><i class="fa fa-refresh"></i> Refresh</a>
     </li>
     {% endfor %}
 </ul>

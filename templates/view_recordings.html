@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>View Recordings</h1>
+<h1 class="mb-3">Recordings</h1>
 {% for cam_id, recs in recordings.items() %}
     <h3>Camera {{ cam_id }}</h3>
     <ul class="list-group">
         {% for rec in recs %}
-        <li class="list-group-item">
-            <a href="{{ url_for('static', filename=rec) }}">{{ rec }}</a>
+        <li class="list-group-item d-flex">
+            <img src="/static/placeholder.jpg" class="img-thumbnail" width="50" alt="">
+            <div>
+                <div class="mx-3">{{ rec }}  </br>{{ sizes[rec] }} MB</div>
+            </div>
+            <a href="{{ url_for('static', filename=rec) }}" class="btn btn-info float-end"><i class="fa fa-download"></i></a>
         </li>
         {% endfor %}
     </ul>

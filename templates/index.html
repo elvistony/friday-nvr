@@ -2,17 +2,19 @@
 
 {% block content %}
 <h1>Welcome to the NVR System</h1>
+<p>Max {{max_size}} GB  ({{max_size*1024}} MB)</p>
+<p>Consumed {{consumed_size}}MB</p>
 <form action="{{ url_for('set_recording_path') }}" method="post">
     <div class="mb-3">
         <label for="path" class="form-label">Recording Path</label>
-        <input type="text" class="form-control" id="path" name="path">
+        <input placeholder="{{path_rec}}" type="text" class="form-control" id="path" name="path">
     </div>
     <button type="submit" class="btn btn-primary">Set Path</button>
 </form>
 <form action="{{ url_for('set_max_space') }}" method="post">
     <div class="mb-3">
         <label for="max_space" class="form-label">Max Space (in MB)</label>
-        <input type="number" class="form-control" id="max_space" name="max_space">
+        <input type="number" placeholder="{{max_size}} (mb)" class="form-control" id="max_space" name="max_space">
     </div>
     <button type="submit" class="btn btn-primary">Set Max Space</button>
 </form>

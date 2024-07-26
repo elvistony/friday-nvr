@@ -16,6 +16,8 @@ class CameraManager:
             os.makedirs(self.recording_path)
         self.recording_status = {}
         self.last_frames = {}
+        self.total_consumed_size=0
+        self.chunk_size = int(config['DEFAULT']['chunk_size']) * 1024 * 1024
         self.load_cameras()
 
     def load_cameras(self):
@@ -66,15 +68,19 @@ class CameraManager:
 
     def get_recordings(self):
         recordings = {}
+        sizes = {}
         for cam in self.cameras:
             cam_id = cam['id']
             cam_folder = os.path.join(self.recording_path, f'camera_{cam_id}')
             recordings[cam_id] = []
+            
             if os.path.exists(cam_folder):
                 for root, dirs, files in os.walk(cam_folder):
                     for file in files:
-                        recordings[cam_id].append(os.path.join(root, file))
-        return recordings
+                        path = os.path.join(root, file)
+                        sizes[path] = round(os.path.getsize(path)/1024/1024,1)
+                        recordings[cam_id].append(path)
+        return recordings,sizes
 
     def check_storage_space(self):
         total_size = 0
@@ -82,11 +88,24 @@ class CameraManager:
             for f in filenames:
                 fp = os.path.join(dirpath, f)
                 total_size += os.path.getsize(fp)
+        self.total_consumed_size = total_size
 
         while total_size > self.max_space:
             oldest_file = min((os.path.join(dirpath, f) for dirpath, _, filenames in os.walk(self.recording_path) for f in filenames), key=os.path.getctime)
             total_size -= os.path.getsize(oldest_file)
             os.remove(oldest_file)
+    
+    def get_total_consumed_size(self):
+        return round(self.total_consumed_size/1024/1024,2)
+    
+    def check_chunk_size(self,file,camera_id):
+        # print(os.path.getsize(file),'out of',self.chunk_size)
+        if(round(os.path.getsize(file),1) > self.chunk_size):
+            self.stop_recording(camera_id)
+            self.start_recording(camera_id)
+        else:
+            pass
+
 
     def check_camera_status(self, url):
         cap = cv2.VideoCapture(url)
@@ -119,6 +138,7 @@ class CameraManager:
                             break
                         out.write(frame)
                         self.check_storage_space()
+                        self.check_chunk_size(filename,camera_id)
                     cap.release()
                     out.release()
 

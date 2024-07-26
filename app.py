@@ -1,16 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from camera import CameraManager
 from config import Config
+import configparser
 import threading
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 camera_manager = CameraManager()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    camera_manager.check_storage_space()
+    return render_template('index.html',path_rec=config.get('DEFAULT','recording_path'), max_size=int(config.get('DEFAULT','max_space')),consumed_size=camera_manager.get_total_consumed_size())
 
 @app.route('/cameras')
 def manage_cameras():
@@ -47,8 +52,8 @@ def edit_camera(camera_id):
 
 @app.route('/view_recordings')
 def view_recordings():
-    recordings = camera_manager.get_recordings()
-    return render_template('view_recordings.html', recordings=recordings)
+    recordings,sizes = camera_manager.get_recordings()
+    return render_template('view_recordings.html', recordings=recordings,sizes=sizes)
 
 @app.route('/set_recording_path', methods=['POST'])
 def set_recording_path():

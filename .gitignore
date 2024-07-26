@@ -1,2 +1,4 @@
 /recordings
+/static/recordings/
 config.ini
+/__pycache__
