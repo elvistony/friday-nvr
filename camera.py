@@ -103,8 +103,11 @@ class CameraManager:
         if(round(os.path.getsize(file),1) > self.chunk_size):
             self.stop_recording(camera_id)
             self.start_recording(camera_id)
+            print("Saving and restarting Recording...",os.path.getsize(file),'out of',self.chunk_size)
+            return False
         else:
-            pass
+            return True
+            
 
 
     def check_camera_status(self, url):
@@ -138,7 +141,8 @@ class CameraManager:
                             break
                         out.write(frame)
                         self.check_storage_space()
-                        self.check_chunk_size(filename,camera_id)
+                        if(not self.check_chunk_size(filename,camera_id)):
+                            return
                     cap.release()
                     out.release()
 

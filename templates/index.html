@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Welcome to the NVR System</h1>
-<p>Max {{max_size}} GB  ({{max_size*1024}} MB)</p>
+<p>Max {{max_size/1024}} GB  ({{max_size}} MB)</p>
 <p>Consumed {{consumed_size}}MB</p>
 <form action="{{ url_for('set_recording_path') }}" method="post">
     <div class="mb-3">
