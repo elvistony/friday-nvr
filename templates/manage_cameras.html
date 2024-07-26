@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Manage Cameras</h1>
+<form action="{{ url_for('add_camera') }}" method="post">
+    <div class="mb-3">
+        <label for="url" class="form-label">Camera URL</label>
+        <input type="text" class="form-control" id="url" name="url">
+    </div>
+    <div class="mb-3">
+        <label for="nickname" class="form-label">Camera Nickname</label>
+        <input type="text" class="form-control" id="nickname" name="nickname">
+    </div>
+    <button type="submit" class="btn btn-primary">Add Camera</button>
+</form>
+<ul class="list-group mt-3">
+    {% for camera in cameras %}
+    <li class="list-group-item">
+        <span>{{ camera.nickname }} - {{ camera.url }} - {{ camera.status }} 
+        {% if camera.recording %}<span class="badge bg-danger">Recording</span>{% endif %}</span>
+        <img src="{{ url_for('static', filename=camera_manager.get_last_frame(camera.id)) }}" alt="Last frame" class="img-thumbnail" width="100">
+        <form action="{{ url_for('edit_camera', camera_id=camera.id) }}" method="post" class="d-inline-block">
+            <input type="text" class="form-control d-inline-block w-50" name="url" value="{{ camera.url }}">
+            <input type="text" class="form-control d-inline-block w-25" name="nickname" value="{{ camera.nickname }}">
+            <button type="submit" class="btn btn-success">Update</button>
+        </form>
+        <a href="{{ url_for('remove_camera', camera_id=camera.id) }}" class="btn btn-danger">Remove</a>
+        <a href="{{ url_for('start_recording', camera_id=camera.id) }}" class="btn btn-primary">Start Recording</a>
+        <a href="{{ url_for('stop_recording', camera_id=camera.id) }}" class="btn btn-secondary">Stop Recording</a>
+        <a href="{{ url_for('flush_recording', camera_id=camera.id) }}" class="btn btn-warning">Flush Recording</a>
+        <a href="{{ url_for('view_last_recording', camera_id=camera.id) }}" class="btn btn-info">View Last Recording</a>
+        <a href="{{ url_for('refresh_feed', camera_id=camera.id) }}" class="btn btn-success">Refresh Feed</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
