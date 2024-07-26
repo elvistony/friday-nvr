@@ -133,10 +133,16 @@ class CameraManager:
                 out = cv2.VideoWriter(filename, fourcc, 20.0, (int(cap.get(3)), int(cap.get(4))))
 
                 def record():
+                    fail_count = 0
+                    MAX_RETRIES = 10
                     while self.recording_status[camera_id]:
                         ret, frame = cap.read()
                         if not ret:
                             print(f"Failed to capture frame from camera {camera_id}")
+                            fail_count+=1
+                            time.sleep(2)
+                            continue
+                        if(fail_count>=MAX_RETRIES):
                             break
 
                         out.write(frame)
