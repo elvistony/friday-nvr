@@ -142,7 +142,7 @@ class CameraManager:
                         out.write(frame)
                         self.check_storage_space()
                         if(not self.check_chunk_size(filename,camera_id)):
-                            return
+                            break
                     cap.release()
                     out.release()
 
