@@ -3,6 +3,7 @@ import cv2
 import configparser
 import threading
 from datetime import datetime
+import time
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -137,9 +138,12 @@ class CameraManager:
                         if not ret:
                             print(f"Failed to capture frame from camera {camera_id}")
                             break
+
                         out.write(frame)
                         self.check_storage_space()
-                        self.check_chunk_size(filename,camera_id)
+                        if(not self.check_chunk_size(filename,camera_id)):
+                            break
+
                     cap.release()
                     out.release()
 

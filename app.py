@@ -3,9 +3,11 @@ from camera import CameraManager
 from config import Config
 import configparser
 import threading
+import logging
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.logger.setLevel(logging.ERROR)
 
 config = configparser.ConfigParser()
 config.read('config.ini')
