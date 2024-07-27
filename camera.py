@@ -69,7 +69,7 @@ class CameraManager:
 
     def get_recordings(self):
         recordings = {}
-        sizes = {}
+        specs = {}
         for cam in self.cameras:
             cam_id = cam['id']
             cam_folder = os.path.join(self.recording_path, f'camera_{cam_id}')
@@ -79,9 +79,13 @@ class CameraManager:
                 for root, dirs, files in os.walk(cam_folder):
                     for file in files:
                         path = os.path.join(root, file)
-                        sizes[path] = round(os.path.getsize(path)/1024/1024,1)
+                        specs[path] = {
+                            'size':round(os.path.getsize(path)/1024/1024,1),
+                            'name':os.path.basename(path),
+                            'created_on':time.strftime("%d-%m-%Y %H:%M", time.strptime(time.ctime(os.path.getmtime(path))))
+                        }
                         recordings[cam_id].append(path)
-        return recordings,sizes
+        return recordings,specs
 
     def check_storage_space(self):
         total_size = 0
@@ -126,10 +130,11 @@ class CameraManager:
             cap = cv2.VideoCapture(url)
             if cap.isOpened():
                 self.recording_status[camera_id] = True
-                filename = os.path.join(self.recording_path, f'camera_{camera_id}', f'{datetime.now().strftime("%Y%m%d_%H%M%S")}.avi')
+                filename = os.path.join(self.recording_path, f'camera_{camera_id}', f'{datetime.now().strftime("%Y%m%d_%H%M%S")}.mp4')
                 if not os.path.exists(os.path.dirname(filename)):
                     os.makedirs(os.path.dirname(filename))
-                fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                # fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                fourcc = cv2.VideoWriter_fourcc(*'avc1')
                 out = cv2.VideoWriter(filename, fourcc, 20.0, (int(cap.get(3)), int(cap.get(4))))
 
                 def record():

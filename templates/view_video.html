@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-3">Video Player</h1>
+<p>Playing:{{src}}</p>
+<video class="video-js" src="/{{src}}" autoplay muted controls></video>
+{% endblock %}

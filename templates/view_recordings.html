@@ -7,11 +7,14 @@
     <ul class="list-group">
         {% for rec in recs %}
         <li class="list-group-item d-flex">
-            <img src="/static/placeholder.jpg" class="img-thumbnail" width="50" alt="">
+            <img src="/static/placeholder.jpg" class="img-thumbnail" width="100" alt="">
             <div>
-                <div class="mx-3">{{ rec }}  </br>{{ sizes[rec] }} MB</div>
+                <div class="mx-3">{{ specs[rec]['name'] }}</div>
+                <div class="mx-3">{{ specs[rec]['size'] }} MB</div>
+                <div class="mx-3"><small><b>Recorded on: </b>{{specs[rec]['created_on']}}</small></div>
             </div>
-            <a href="{{rec}}" class="btn btn-info float-end"><i class="fa fa-download"></i></a>
+            <a href="{{rec}}" class="btn btn-info float-end m-2"><i class="fa fa-download"></i></a>
+            <a href="/video/{{rec}}" class="btn btn-success float-end m-2"><i class="fa fa-play"></i></a>
         </li>
         {% endfor %}
     </ul>

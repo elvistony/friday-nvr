@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash,send_from_directory,send_file,stream_with_context,Response
 from camera import CameraManager
 from config import Config
 import configparser
 import threading
+import requests
 import logging
 
 app = Flask(__name__)
@@ -54,8 +55,13 @@ def edit_camera(camera_id):
 
 @app.route('/view_recordings')
 def view_recordings():
-    recordings,sizes = camera_manager.get_recordings()
-    return render_template('view_recordings.html', recordings=recordings,sizes=sizes)
+    recordings,specs = camera_manager.get_recordings()
+    return render_template('view_recordings.html', recordings=recordings,specs=specs)
+
+@app.route('/video/<path:path>')
+def view_video(path):
+    # path = request.args.get('src')  
+    return render_template('view_video.html', src=path)
 
 @app.route('/set_recording_path', methods=['POST'])
 def set_recording_path():
@@ -70,6 +76,17 @@ def set_max_space():
     camera_manager.set_max_space(int(max_space))
     flash('Max space set successfully')
     return redirect(url_for('index'))
+
+@app.route('/play/<path:path>')
+def render_file(path):
+    return send_file(path,as_attachment=True)
+    # return send_from_directory(config.get('DEFAULT','recording_path'),filename, as_attachment=True)
+
+@app.route("/player/<path:path>")
+def streamed_proxy(path):
+    r = requests.get('/'+path, stream=True)
+    return Response(r.iter_content(chunk_size=10*1024),
+                    content_type=r.headers['Content-Type'])
 
 @app.route('/flush_recording/<int:camera_id>')
 def flush_recording(camera_id):
